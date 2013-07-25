@@ -1,0 +1,41 @@
+--spool ./dept_employee
+set serveroutput on size 111111
+
+create or replace procedure prc_print_dept_emp
+        /****************************************
+        * Description:
+        *     This program will print out location 
+        *     of each dept, then print the name, job 
+        *     of each employee at that location.
+        ****************************************
+        */
+as
+        cnt number;
+
+  cursor cur_dept 
+        is
+           select deptno,loc 
+             from dept;
+
+        cursor cur_emp (cp_deptno number)
+        is
+	   select ename, job 
+             from emp
+            where deptno = cp_deptno;
+
+begin
+	for rec_dept in cur_dept loop
+                cnt := 0;
+		dbms_output.put_line (chr(10)||'Dept Locaion: '||rec_dept.loc||chr(10));
+		for rec_emp in cur_emp(rec_dept.deptno) loop
+                        cnt := cnt + 1;
+			dbms_output.put_line ('#'||cnt||' '||rec_emp.ename||' '||rec_emp.job);		
+		end loop;
+        end loop;
+end;
+/
+show err 
+
+exec prc_print_dept_emp
+--spool off
+
