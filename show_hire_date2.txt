@@ -1,0 +1,25 @@
+SET serveroutput on size 111111
+
+CREATE OR REPLACE PROCEDURE 
+  show_hire_date2(p_empno IN NUMBER)
+AS
+  v_empno NUMBER;
+  hire_date  DATE;
+  e_lastname varchar2(50);
+
+/* This procedure will display name and hiredate from a person using 
+    empno as IN parameter.  Done with demobld.sql.
+*/
+
+BEGIN
+	SELECT ename, hiredate, empno
+	INTO e_lastname, hire_date, v_empno
+        FROM emp WHERE  empno = p_empno;
+	IF SQL%FOUND THEN
+	 dbms_output.put_line('Employee: '||e_lastname||chr(10)||'Hire Date: '|| to_char(hire_date));
+	END IF;
+END;
+
+/
+SHOW ERROR
+--EXEC show_hire_date2(7369)
