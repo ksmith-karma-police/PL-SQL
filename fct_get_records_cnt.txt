@@ -1,0 +1,14 @@
+set serveroutput on size 11111
+
+create or replace function fct_get_records_cnt (p_tbl_name IN varchar2) 
+  return NUMBER
+IS
+	v_num_records = p_tbl_name%ROWCOUNT;
+BEGIN
+	--v_num_records = p_tbl_name%ROWCOUNT;
+	dbms_output.put_line(chr(10)||'table name: '||p_tbl_name|| '--ROWCOUNT: '||v_num_records);
+	RETURN v_num_records;
+END;
+/
+
+show err
