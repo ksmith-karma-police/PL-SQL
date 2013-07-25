@@ -1,0 +1,21 @@
+CREATE OR REPLACE PROCEDURE prc_generate_my_file
+AS
+
+
+  file_handler UTL_FILE.file_type;
+	out_file_name VARCHAR2(100):='Kristen'||'_'||TO_CHAR(SYSDATE, 'yyyymmdd24miss'||'.log');
+
+BEGIN
+
+	file_handler := utl_file.fopen('c:\Temp\utlfile', out_file_name, 'w');
+	UTL_file.PUTF(FILE_HANDLER, 'I enjoy coding. ');
+	UTL_FILE.fclose(file_handler);
+
+    EXCEPTION
+	when others then
+		dbms_output.put_line(sqlcode||substr(sqlerrm, 1, 200));
+
+END;
+/
+
+exec prc_generate_my_file
