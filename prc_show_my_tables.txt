@@ -1,0 +1,59 @@
+set serveroutput on size 11111
+
+CREATE OR REPLACE PROCEDURE prc_show_my_tables
+AS
+   v_cnt   NUMBER;
+   found_table_without_records EXCEPTION;
+   
+   PRAGMA EXCEPTION_INIT(found_table_without_records, -20008);
+
+   CURSOR cur_user_tables IS
+      SELECT table_name
+        FROM user_tables;
+
+   -- inline function
+   FUNCTION fct_is_big_table (cnt NUMBER)
+      RETURN VARCHAR2
+   IS
+   BEGIN
+      IF (cnt > 10)
+      THEN
+         RETURN 'Y';
+      ELSE
+         RETURN 'N';
+      END IF;
+   END;
+   
+BEGIN
+   DBMS_OUTPUT.put_line ('TableName  RecordCounts  BigTable(?)   ');
+   DBMS_OUTPUT.put_line ('---------  ------------  ----------- ');
+
+   FOR rec IN cur_user_tables
+   LOOP
+      v_cnt := NULL;
+      v_cnt := fct_count_table_records (rec.table_name);
+    
+	  IF v_cnt = 0 THEN
+		RAISE found_table_without_records;  
+		DBMS_OUTPUT.PUT_LINE('ORA-20008: a data exception occured. No records were found in the table '||rec.table_name);
+		  
+	  ELSE
+		DBMS_OUTPUT.put_line (
+				RPAD (rec.table_name, 20)
+			 || RPAD (v_cnt, 5)
+			 || fct_is_big_table (v_cnt)
+		  );
+	  END IF;
+   END LOOP;
+   
+   EXCEPTION
+	WHEN found_table_without_records THEN
+		dbms_output.put_line(chr(10)||'ERROR -20008: FOUND TABLE WITHOUT RECORDS.');
+   
+END;
+/
+
+
+SHOW err
+
+EXEC prc_show_my_tables
